@@ -163,10 +163,3 @@ curl -X POST -H "Content-Type: application/json" \
 
 **MIT** © [Rushil Alagh]
 
----
-
-![CineRed Demo](https://via.placeholder.com/800x400?text=CineRed+Interface+Preview)
-
---- 
-
-Let me know if further adjustments are needed!
