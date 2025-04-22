@@ -6,7 +6,7 @@ A modern, containerized solution for seamless movie ticket bookings with real-ti
 
 ## 📜 System Architecture Diagram
 
-![System Architecture Diagram](https://github.com/user-attachments/assets/fdf26cea-e6d2-4c5e-9f7f-c93a25ee1cd0)
+![System Architecture Diagram](https://github.com/user-attachments/assets/8c4686bf-0fd3-4bf5-a2be-d15c334beea5)
 
 ---
 
