@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USER=movie_admin
+      - DB_HOST=db
+      - DB_NAME=movie_booking_system
+      - DB_PASSWORD=securepass123
+      - DB_PORT=5432
+      - RABBITMQ_URL=amqp://mq_user:mq_password@rabbitmq  # RabbitMQ connection URL
+    depends_on:
+      - db
+      - rabbitmq  # Ensure RabbitMQ starts first
+    networks:
+      - app-network
+
+  db:
+    build: ./database
+    environment:
+      - POSTGRES_USER=movie_admin
+      - POSTGRES_PASSWORD=securepass123
+      - POSTGRES_DB=movie_booking_system
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management  # Management plugin included
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=mq_user
+      - RABBITMQ_DEFAULT_PASS=mq_password
+      - RABBITMQ_DEFAULT_VHOST=/
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json  # Optional config
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  rabbitmq_data:

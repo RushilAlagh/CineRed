@@ -1,0 +1,12 @@
+FROM postgres:15
+
+# Custom PostgreSQL credentials
+ENV POSTGRES_USER=movie_admin
+ENV POSTGRES_PASSWORD=securepass123
+ENV POSTGRES_DB=movie_booking_system
+
+# Copy the SQL schema and data into the container's init directory
+COPY init.sql /docker-entrypoint-initdb.d/
+
+# Expose PostgreSQL port
+EXPOSE 5432
