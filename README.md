@@ -71,20 +71,28 @@ Admins can:
 
 ## 📚 API Endpoints
 
-| Endpoint                      | Method | Description                     |
-|-------------------------------|--------|---------------------------------|
-| `/api/movies`                 | GET    | List all movies                |
-| `/api/movies/:id`             | GET    | Get movie details              |
-| `/api/showtimes/movie/:id`    | GET    | Get showtimes for a movie      |
-| `/api/bookings`               | POST   | Create new booking             |
-| `/api/bookings?email=:email`  | GET    | Get bookings by email          |
+| Endpoint                        | Method | Description                                      |
+|---------------------------------|--------|--------------------------------------------------|
+| `/api/movies`                   | GET    | Retrieve all movies                              |
+| `/api/movies/:id`               | GET    | Retrieve a specific movie by ID                 |
+| `/api/movies/:id`               | PUT    | Update a specific movie                         |
+| `/api/movies/:id`               | DELETE | Delete a specific movie                         |
+| `/api/theaters`                 | POST   | Create a new theatre                            |
+| `/api/theaters`                 | GET    | Retrieve all theatres                           |
+| `/api/showtimes`                | POST   | Create a new showtime                           |
+| `/api/showtimes/movie/:movie_id`| GET    | Retrieves showtimes for a specific movie by ID  |
+| `/api/bookings`                 | POST   | Book a ticket for a specific showtime           |
+| `/api/bookings?email=:email`    | GET    | Retrieve all bookings by customer email         |
 
 ### Example Requests
 
-#### Fetch movies
+### 🎬 Retrieve All Movies
+
+**Request:**
 ```bash
 curl http://localhost:3000/api/movies
 ```
+
 **Sample Response:**
 ```json
 [
@@ -94,11 +102,171 @@ curl http://localhost:3000/api/movies
     "description": "A mind-bending thriller...",
     "duration_minutes": 148,
     "genre": "Sci-Fi"
+  },
+  {
+    "movie_id": 2,
+    "title": "The Matrix",
+    "description": "A hacker discovers reality is an illusion.",
+    "duration_minutes": 136,
+    "genre": "Sci-Fi"
   }
 ]
 ```
 
-#### Create a new booking
+---
+
+### 🎬 Retrieve a Specific Movie by ID
+
+**Request:**
+```bash
+curl http://localhost:3000/api/movies/1
+```
+
+**Sample Response:**
+```json
+{
+  "movie_id": 1,
+  "title": "Inception",
+  "description": "A mind-bending thriller...",
+  "duration_minutes": 148,
+  "genre": "Sci-Fi"
+}
+```
+
+---
+
+### ✏️ Update a Specific Movie
+
+**Request:**
+```bash
+curl -X PUT -H "Content-Type: application/json" \
+-d '{
+  "title": "Inception (Updated)",
+  "description": "An updated description...",
+  "duration_minutes": 150,
+  "genre": "Thriller"
+}' http://localhost:3000/api/movies/1
+```
+
+**Sample Response:**
+```json
+{
+  "message": "Movie updated successfully."
+}
+```
+
+---
+
+### 🗑️ Delete a Specific Movie
+
+**Request:**
+```bash
+curl -X DELETE http://localhost:3000/api/movies/1
+```
+
+**Sample Response:**
+```json
+{
+  "message": "Movie deleted successfully."
+}
+```
+
+---
+
+### 🏛️ Create a New Theatre
+
+**Request:**
+```bash
+curl -X POST -H "Content-Type: application/json" \
+-d '{
+  "name": "PVR Cinemas",
+  "location": "Downtown City Center"
+}' http://localhost:3000/api/theaters
+```
+
+**Sample Response:**
+```json
+{
+  "theater_id": 3,
+  "name": "PVR Cinemas",
+  "location": "Downtown City Center"
+}
+```
+
+---
+
+### 🏛️ Retrieve All Theatres
+
+**Request:**
+```bash
+curl http://localhost:3000/api/theaters
+```
+
+**Sample Response:**
+```json
+[
+  {
+    "theater_id": 1,
+    "name": "IMAX Theatre",
+    "location": "City Mall"
+  },
+  {
+    "theater_id": 2,
+    "name": "Cineplex",
+    "location": "Uptown Street"
+  }
+]
+```
+
+---
+
+### ⏰ Create a New Showtime
+
+**Request:**
+```bash
+curl -X POST -H "Content-Type: application/json" \
+-d '{
+  "movie_id": 1,
+  "theater_id": 3,
+  "start_time": "2025-04-26T18:00:00"
+}' http://localhost:3000/api/showtimes
+```
+
+**Sample Response:**
+```json
+{
+  "showtime_id": 7,
+  "movie_id": 1,
+  "theater_id": 3,
+  "start_time": "2025-04-26T18:00:00"
+}
+```
+
+---
+
+### ⏳ Retrieve Showtimes for a Specific Movie
+
+**Request:**
+```bash
+curl http://localhost:3000/api/showtimes/movie/1
+```
+
+**Sample Response:**
+```json
+[
+  {
+    "showtime_id": 7,
+    "theater_name": "PVR Cinemas",
+    "start_time": "2025-04-26T18:00:00"
+  }
+]
+```
+
+---
+
+### 🎟️ Book a Ticket for a Specific Showtime
+
+**Request:**
 ```bash
 curl -X POST -H "Content-Type: application/json" \
 -d '{
@@ -108,6 +276,7 @@ curl -X POST -H "Content-Type: application/json" \
   "number_of_tickets": 2
 }' http://localhost:3000/api/bookings
 ```
+
 **Sample Response:**
 ```json
 {
@@ -118,6 +287,28 @@ curl -X POST -H "Content-Type: application/json" \
 ```
 
 ---
+
+### 📩 Retrieve All Bookings by Customer Email
+
+**Request:**
+```bash
+curl http://localhost:3000/api/bookings?email=john@example.com
+```
+
+**Sample Response:**
+```json
+[
+  {
+    "booking_id": 5,
+    "showtime_id": 1,
+    "customer_name": "John Doe",
+    "number_of_tickets": 2,
+    "total_amount": 20.00,
+    "status": "confirmed"
+  }
+]
+```
+
 
 ## ✨ Key Features
 
