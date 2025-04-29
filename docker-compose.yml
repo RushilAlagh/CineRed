@@ -10,6 +10,12 @@ services:
       - ./frontend:/usr/share/nginx/html
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]  # Checks if the frontend is accessible
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s  # Gives some time for the frontend to start
 
   backend:
     build:
@@ -22,12 +28,18 @@ services:
       - DB_NAME=movie_booking_system
       - DB_PASSWORD=securepass123
       - DB_PORT=5432
-      - RABBITMQ_URL=amqp://mq_user:mq_password@rabbitmq  # RabbitMQ connection URL
+      - RABBITMQ_URL=amqp://mq_user:mq_password@rabbitmq
     depends_on:
       - db
-      - rabbitmq  # Ensure RabbitMQ starts first
+      - rabbitmq
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]  # Adjust to your health endpoint
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 
   db:
     build: ./database
@@ -41,6 +53,12 @@ services:
       - "5432:5432"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "movie_admin", "-d", "movie_booking_system"]  # PostgreSQL health check
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   rabbitmq:
     image: rabbitmq:3.12-management  # Management plugin included
@@ -48,7 +66,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=mq_user
       - RABBITMQ_DEFAULT_PASS=mq_password
-      - RABBITMQ_DEFAULT_VHOST=/
+      - RABBITMQ_DEFAULT_VHOST=/ 
     ports:
       - "5672:5672"  # AMQP port
       - "15672:15672"  # Management UI port
@@ -62,6 +80,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10s
 
 networks:
   app-network:
